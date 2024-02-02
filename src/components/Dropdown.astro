@@ -1,0 +1,43 @@
+<div>
+  <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" class="text-white flex items-center" type="button">Categorias
+    <svg id="iconDropdown" class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+    </svg>
+  </button>
+</div>
+    
+    <!-- Dropdown menu -->
+<div id="dropdownHover" class="z-10 hidden absolute w-[150px] mt-7 ml-14 bg-black text-white">
+        <ul class="text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
+          <li>
+            <a href="/categories/man" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hombre</a>
+          </li>
+          <li>
+            <a href="/categories/women" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mujer</a>
+          </li>
+          <li>
+            <a href="/categories/kids" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Niños</a>
+          </li>
+        </ul>
+</div>
+
+<script>
+
+    const dropdownHoverBtn = document.querySelector('#dropdownHoverButton');
+
+    dropdownHoverBtn.addEventListener('click', function() {
+        const dropdownHover = document.querySelector('#dropdownHover');
+        const iconDropdown = document.querySelector('#iconDropdown');
+
+        console.log('Entra');
+
+        if (dropdownHover.classList.contains('hidden')) {
+            dropdownHover.classList.remove('hidden');
+            iconDropdown.classList.add('rotate-180');
+        } else {
+            dropdownHover.classList.add('hidden') ;
+            iconDropdown.classList.remove('rotate-180');
+        }
+    });
+
+</script>

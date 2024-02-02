@@ -1,0 +1,41 @@
+---
+import Dropdown from "./Dropdown.astro";
+---
+
+<header class="flex transition-all ease-in-out justify-evenly items-center h-[var(--nav-height)] w-full bg-black fixed top-0 shadow" id="mainNavbar">
+    <section class="flex w-[var(--page-width)] items-center">
+        <nav class="flex flex-grow basis-0">
+            <ul class="flex gap-4 [&>li>a]:px-1 [&>li>a]:py-2">
+                <li><a href="/">Inicio</a></li>
+                <Dropdown />
+                <li><a href="/contact">Contacto</a></li>
+            </ul>
+        </nav>
+        <div>
+            <a href="/" aria-label="Ir a la página principal">
+                <img src="/kz-black.png" alt="Logo de la tienda" width="50px">
+            </a>
+        </div>
+        <div class="flex flex-grow justify-end">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg>
+        </div>
+    </section>
+</header>
+
+<script>
+    // Enable hidden navbar
+    {
+        const navbar = document.querySelector('#mainNavbar');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            if(lastScrollY < window.scrollY && lastScrollY > 45) {
+                navbar.classList.add('-translate-y-[75px]');
+            } else {
+                navbar.classList.remove('-translate-y-[75px]');
+            }
+
+            lastScrollY = window.scrollY;
+        });
+    }
+</script>

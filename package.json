@@ -1,0 +1,20 @@
+{
+  "name": "kathzmshop",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "@fontsource/alegreya-sans-sc": "^5.0.8",
+    "astro": "^4.1.2",
+    "firebase": "^10.7.2",
+    "firebase-admin": "^12.0.0",
+    "tailwindcss": "^3.4.1"
+  }
+}

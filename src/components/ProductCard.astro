@@ -1,0 +1,27 @@
+---
+import { USDollar } from '../main';
+
+interface Props {
+    productImage: string;
+    productName: string;
+    productPrice: number;
+    available: boolean;
+}
+
+const { productName, productPrice, available, productImage } = Astro.props;
+const classNameAvailable = available ? "rounded bg-green-200 px-2 py-1" : "rounded bg-red-200 px-2 py-1";
+
+---
+
+<article class="rounded px-3 py-4">
+    <header>
+        <img src=`${productImage}` alt=`Product ${productName}` width="250px">
+    </header>
+    <section class="flex justify-between items-center pt-4">
+        <div class=`${classNameAvailable}`>
+            {available ? <p>Disponible</p> : <p>Agotado</p>}
+        </div>
+        <p class="text-xl tracking-tight">{USDollar.format(productPrice)} USD</p>
+    </section>
+    <h3 class="text-md py-4 font-semibold">{productName}</h3>
+</article>
