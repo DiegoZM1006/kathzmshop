@@ -1,30 +1,14 @@
 ---
+import { categoryProductsArr, categoryTranslate, typeTranslate } from '../main';
+
 interface Props {
     category: string;
 }
 
 const { category } = Astro.props;
 
-const categoryTranslate = "Niños";
-
-const categoryProductsArr = {
-  Niños: [
-    { title: "Zapatos", titleEn: "shoes", url: "/kid-shoes.webp" },
-    { title: "Ropa", titleEn: "clothes", url: "/kid-clothes.webp" },
-  ],
-  Hombre: [
-    { title: "Zapatos", url: "/man-shoes.webp" },
-    { title: "Ropa", url: "/man-clothes.webp" },
-    { title: "Accesorios", url: "/man-accesories.webp" },
-  ],
-  Mujer: [
-    { title: "Zapatos", url: "/women-shoes.webp" },
-    { title: "Ropa", url: "/women-clothes.webp" },
-    { title: "Accesorios", url: "/women-accesories.webp" },
-  ],
-};
-
-const products = categoryProductsArr[categoryTranslate] || [];
+const newCategory = categoryTranslate(category);
+const products = categoryProductsArr(newCategory) || [];
 ---
 
 <section class="flex flex-wrap justify-center items-center mb-10 gap-5">

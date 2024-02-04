@@ -1,18 +1,48 @@
 ---
+import CategoryCard from "../../../components/CategoryCard.astro";
+import ProductCard from "../../../components/ProductCard.astro";
+import fetchProducts from "../../../db";
 import Layout from "../../../layouts/Layout.astro";
+import { categoryTranslate, typeTranslate } from "../../../main";
 
 export const prerender = false;
 const { gender, type } = Astro.params;
+const newGender = categoryTranslate(gender);
+const newType = typeTranslate(type);
 
+let allProducts;
+
+try {
+    allProducts = await fetchProducts();
+} catch (error) {
+    console.error(error.message);
+}
+
+const categoryProducts = allProducts?.filter((element) => element.category === newGender && element.type == newType);
 ---
 
-<Layout title="">
+<Layout title={"KathZM Shop - " + newGender + " - " + newType}>
 
     <main>
 
         <section class="w-[var(--page-width)] text-black mx-auto pt-10">
 
-            <h1>{gender}, {type}</h1>
+            <CategoryCard category={gender} />
+
+            <h2 class="text-3xl font-bold">{newType} de {newGender}</h2>
+
+			<section class="grid grid-cols-4 pt-5 gap-5">
+				{
+          			categoryProducts.length ?
+                      categoryProducts?.map((item) => (
+						<a href={"/product/" + item.name}>
+							<ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} ></ProductCard>
+						</a>
+				  	))
+                    :
+                    <h2>No hay productos</h2>
+				}
+			</section>
 
 			<section class="w-100 flex justify-center mt-5">
 				<a href="/allProducts" class="bg-black px-4 py-2 text-white rounded shadow">Mostrar todo</a>

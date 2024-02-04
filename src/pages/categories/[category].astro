@@ -2,23 +2,13 @@
 import Layout from "../../layouts/Layout.astro";
 import fetchProducts from "../../db";
 import ProductCard from "../../components/ProductCard.astro";
+import { categoryProductsArr, categoryTranslate } from "../../main";
+import CategoryCard from "../../components/CategoryCard.astro";
 
 export const prerender = false;
+
 const { category } = Astro.params;
-
-function textTranslate(category) {
-    if(category == "man") {
-        return "Hombre";
-    } else if(category == "women") {
-        return "Mujer";
-    } else if(category == "kids") {
-        return "Niños";
-    } else {
-        return "404";
-    }
-}
-
-const categoryTranslate = textTranslate(category);
+const newCategory = categoryTranslate(category);
 
 let allProducts;
 
@@ -27,50 +17,19 @@ try {
 } catch (error) {
     console.error(error.message);
 }
-const categoryProducts = allProducts?.filter((element) => element.category === categoryTranslate);
 
-const categoryProductsArr = {
-  Niños: [
-    { title: "Zapatos", titleEn: "shoes", url: "/kid-shoes.webp" },
-    { title: "Ropa", titleEn: "clothes", url: "/kid-clothes.webp" },
-  ],
-  Hombre: [
-    { title: "Zapatos", url: "/man-shoes.webp" },
-    { title: "Ropa", url: "/man-clothes.webp" },
-    { title: "Accesorios", url: "/man-accesories.webp" },
-  ],
-  Mujer: [
-    { title: "Zapatos", url: "/women-shoes.webp" },
-    { title: "Ropa", url: "/women-clothes.webp" },
-    { title: "Accesorios", url: "/women-accesories.webp" },
-  ],
-};
-
-const products = categoryProductsArr[categoryTranslate] || [];
+const categoryProducts = allProducts?.filter((element) => element.category === newCategory);
 ---
 
-<Layout title={"KathZM Shop - " + categoryTranslate}>
+<Layout title={"KathZM Shop - " + newCategory}>
 
     <main>
 
         <section class="w-[var(--page-width)] text-black mx-auto pt-10">
 
-            <section class="flex flex-wrap justify-center items-center mb-10 gap-5">
+            <CategoryCard category={category} />
 
-                {products.map((product, index) => (
-                    <a href={"/categories/" + category + "/" + product.titleEn}>
-                        <div
-                        class="w-[250px] h-[350px] rounded shadow-xl bg-cover bg-center flex items-end justify-center"
-                        style={{ backgroundImage: `url('${product.url}')` }}
-                        >
-                        <h2 class="text-xl bg-[rgba(0,0,0,0.345)] w-full text-center text-white rounded-b">{product.title}</h2>
-                        </div>
-                    </a>
-                ))}
-
-            </section>
-
-			<h2 class="text-3xl font-bold">Productos de {categoryTranslate}</h2>
+			<h2 class="text-3xl font-bold">Productos de {newCategory}</h2>
 
 			<section class="grid grid-cols-4 pt-5 gap-5">
 				{
