@@ -1,5 +1,3 @@
-import fetchProducts from "./db";
-
 export const USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -42,3 +40,5 @@ export function categoryProductsArr(str) {
     }
     return dictionary[str];
 };
+
+export const srcMap = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d352.5415238551123!2d-79.4605529300001!3d-1.4435718388883554!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902cb3dba3a82d29%3A0x4ca5d0a596ac835b!2sVentanas%2C%20Ecuador!5e0!3m2!1ses-419!2sco!4v1707192975680!5m2!1ses-419!2sco";
