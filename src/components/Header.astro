@@ -5,7 +5,7 @@ import Dropdown from "./Dropdown.astro";
 <header class="flex transition-all ease-in-out justify-evenly items-center h-[var(--nav-height)] w-full bg-black fixed top-0 shadow" id="mainNavbar">
     <section class="flex w-[var(--page-width)] items-center">
         <nav class="flex flex-grow basis-0">
-            <ul class="flex gap-4 [&>li>a]:px-1 [&>li>a]:py-2">
+            <ul class="flex gap-4 items-center [&>li>a]:px-1 [&>li>a]:py-2 [&>li>a:hover]:border-b-2 border-b-white transition-all">
                 <li><a href="/">Inicio</a></li>
                 <Dropdown />
                 <li><a href="/contact">Contacto</a></li>
