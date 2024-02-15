@@ -17,10 +17,10 @@ const tenFirstProducts = finalProducts.slice(0, 15);
 
 	<main>
 
-		<section class="w-[var(--page-width)] text-black mx-auto pt-10">
-			<h2 class="text-3xl font-bold">Productos Destacados</h2>
+		<section class="max-w-[var(--page-width)] text-black mx-auto pt-10">
+			<h2 class="px-3 lg:px-0 text-3xl font-bold">Productos Destacados</h2>
 
-			<section class="grid grid-cols-4 pt-5 gap-5">
+			<section class="px-3 lg:px-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3">
 				{
           			tenFirstProducts?.map((item) => (
 						<a href={"/product/" + item.name}>

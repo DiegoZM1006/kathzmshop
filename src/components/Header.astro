@@ -2,10 +2,13 @@
 import Dropdown from "./Dropdown.astro";
 ---
 
-<header class="flex transition-all ease-in-out justify-evenly items-center h-[var(--nav-height)] w-full bg-black fixed top-0 shadow" id="mainNavbar">
-    <section class="flex w-[var(--page-width)] items-center">
-        <nav class="flex flex-grow basis-0">
-            <ul class="flex gap-4 items-center [&>li>a]:px-1 [&>li>a]:py-2 [&>li>a:hover]:border-b-2 border-b-white transition-all">
+<header class="flex transition-all ease-in-out justify-evenly items-center h-[var(--nav-height)] w-full bg-black fixed top-0 shadow px-5 lg:px-0" id="mainNavbar">
+    <section class="flex w-full lg:w-[var(--page-width)] items-center">
+        <button type="button" id="btnNavbar" class="lg:hidden basis-0 flex-grow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path></svg>
+        </button>
+        <nav id="navBar" class="absolute transition-all top-0 left-0 bottom-0 hidden w-full h-[30dvh] bg-black mt-[var(--nav-height)] text-white bg-red lg:flex lg:flex-grow lg:basis-0">
+            <ul class="flex flex-col lg:justify-between lg:flex-row overflow-auto h-full lg:gap-4 lg:items-center [&>li]:w-full [&>li>a]:w-full [&>li>a:hover]:bg-gray-500 [&>li>a]:px-5 [&>li>a]:block lg:[&>li>a]:px-1 [&>li>a]:py-1 lg:[&>li>a:hover]:border-b-2 border-b-white transition-all">
                 <li><a href="/">Inicio</a></li>
                 <Dropdown />
                 <li><a href="/contact">Contacto</a></li>
@@ -25,17 +28,28 @@ import Dropdown from "./Dropdown.astro";
 <script>
     // Enable hidden navbar
     {
-        const navbar = document.querySelector('#mainNavbar');
+        const mainNavbar = document.querySelector('#mainNavbar');
+        const secondaryNavbar = document.querySelector('#navBar');
+        const btnNavbar = document.querySelector('#btnNavbar');
         let lastScrollY = window.scrollY;
 
         window.addEventListener('scroll', () => {
             if(lastScrollY < window.scrollY && lastScrollY > 45) {
-                navbar.classList.add('-translate-y-[75px]');
+                mainNavbar.classList.add('-translate-y-[75px]');
+                secondaryNavbar.classList.add('hidden');
             } else {
-                navbar.classList.remove('-translate-y-[75px]');
+                mainNavbar.classList.remove('-translate-y-[75px]');
             }
 
             lastScrollY = window.scrollY;
+        });
+
+        btnNavbar.addEventListener('click', () => {
+            if(secondaryNavbar.classList.contains('hidden')) {
+                secondaryNavbar.classList.remove('hidden');
+            } else {
+                secondaryNavbar.classList.add('hidden');
+            }
         });
     }
 </script>
