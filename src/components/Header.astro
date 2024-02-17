@@ -7,8 +7,8 @@ import Dropdown from "./Dropdown.astro";
         <button type="button" id="btnNavbar" class="lg:hidden basis-0 flex-grow">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path></svg>
         </button>
-        <nav id="navBar" class="absolute transition-all top-0 left-0 bottom-0 hidden w-full h-[30dvh] bg-black mt-[var(--nav-height)] text-white bg-red lg:flex lg:flex-grow lg:basis-0">
-            <ul class="flex flex-col lg:justify-between lg:flex-row overflow-auto h-full lg:gap-4 lg:items-center [&>li]:w-full [&>li>a]:w-full [&>li>a:hover]:bg-gray-500 [&>li>a]:px-5 [&>li>a]:block lg:[&>li>a]:px-1 [&>li>a]:py-1 lg:[&>li>a:hover]:border-b-2 border-b-white transition-all">
+        <nav id="navBar" class="absolute transition-all top-0 left-0 bottom-0 hidden w-full h-[30dvh] bg-black mt-[var(--nav-height)] text-white bg-red lg:static lg:h-auto lg:mt-0 lg:flex lg:flex-grow lg:basis-0">
+            <ul class="flex flex-col lg:justify-between lg:flex-row overflow-auto h-full lg:gap-4 lg:items-center [&>li]:w-full [&>li>a]:w-full [&>li>a:hover]:bg-gray-500 lg:[&>li>a:hover]:bg-transparent [&>li>a]:px-5 [&>li>a]:block lg:[&>li>a]:px-1 [&>li>a]:py-1 lg:[&>li>a:hover]:border-b-2 border-b-white transition-all">
                 <li><a href="/">Inicio</a></li>
                 <Dropdown />
                 <li><a href="/contact">Contacto</a></li>
