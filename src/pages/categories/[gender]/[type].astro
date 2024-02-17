@@ -25,13 +25,13 @@ const categoryProducts = allProducts?.filter((element) => element.category === n
 
     <main>
 
-        <section class="w-[var(--page-width)] text-black mx-auto pt-10">
+        <section class="w-full lg:w-[var(--page-width)] text-black mx-auto pt-10">
 
             <CategoryCard category={gender} />
 
             <h2 class="text-3xl font-bold">{newType} de {newGender}</h2>
 
-			<section class="grid grid-cols-4 pt-5 gap-5">
+			<section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 pt-5 gap-5">
 				{
           			categoryProducts.length ?
                       categoryProducts?.map((item) => (

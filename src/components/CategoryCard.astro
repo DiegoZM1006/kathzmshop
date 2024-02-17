@@ -11,16 +11,15 @@ const newCategory = categoryTranslate(category);
 const products = categoryProductsArr(newCategory) || [];
 ---
 
-<section class="flex flex-wrap justify-center items-center mb-10 gap-5">
+<section class="w-full flex justify-start md:justify-center items-center mb-10 gap-3 overflow-auto">
 
     {products.map((product, index) => (
-        <a href={"/categories/" + category + "/" + product.titleEn}>
-            <div
-            class="w-[250px] h-[350px] rounded shadow-xl bg-cover bg-center flex items-end justify-center"
-            style={{ backgroundImage: `url('${product.url}')` }}
-            >
+        <a 
+        href={"/categories/" + category + "/" + product.titleEn} 
+        class="flex-none w-[250px] h-[350px] rounded shadow-xl bg-cover bg-center flex items-end justify-center"
+        style={{ backgroundImage: `url('${product.url}')` }}
+        >
             <h2 class="text-xl bg-[rgba(0,0,0,0.345)] w-full text-center text-white rounded-b">{product.title}</h2>
-            </div>
         </a>
     ))}
 
