@@ -2,6 +2,23 @@
 import Dropdown from "./Dropdown.astro";
 ---
 
+<nav id="searchBar" class="transition-all ease-in-out fixed -translate-y-[90px] flex justify-evenly items-center top-0 w-full h-[var(--nav-height)] bg-black px-5 gap-5">
+    <div class="w-[var(--page-width)] flex items-center justify-center gap-3">
+        <div class="flex border border-white flex-grow w-full p-2 gap-3">
+            <input id="inputSearch" type="text" class="w-full border-0 bg-transparent focus:outline-none" placeholder="Buscar...">
+            <svg xmlns="http://www.w3.org/2000/svg" id="btnInSearch" class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" id="cancelSearch" class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
+    </div>
+</nav>
+
+<nav id="productsBar" class="transition-all -translate-y-[180px] lg:w-[1000px] left-0 right-0 mx-auto ease-in-out fixed flex flex-col top-0 w-full mt-[var(--nav-height)] bg-black px-5 py-5 gap-5">
+    <h2 class="border-b border-b-slate-700 text-slate-300 pb-3">Products</h2>
+    <div id="listProducts" class="flex flex-col gap-3">
+
+    </div>
+</nav>
+
 <header class="flex transition-all ease-in-out justify-evenly items-center h-[var(--nav-height)] w-full bg-black fixed top-0 shadow px-5 lg:px-0" id="mainNavbar">
     <section class="flex w-[var(--page-width)] items-center">
         <button type="button" id="btnNavbar" class="lg:hidden basis-0 flex-grow">
@@ -20,18 +37,41 @@ import Dropdown from "./Dropdown.astro";
             </a>
         </div>
         <div class="flex flex-grow justify-end">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" id="btnSearch" class="cursor-pointer" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg>
         </div>
     </section>
 </header>
 
 <script>
-    // Enable hidden navbar
+    import { initializeApp } from "firebase/app";
+    import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyBHL8pQdAFF-1gvqDdejphfd3_Zb3sk2BE",
+    authDomain: "kathzm-b5783.firebaseapp.com",
+    projectId: "kathzm-b5783",
+    storageBucket: "kathzm-b5783.appspot.com",
+    messagingSenderId: "214773002445",
+    appId: "1:214773002445:web:8f5aee6780653b5a0b7984"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    export const db = getFirestore(app);
+
     {
         const mainNavbar = document.querySelector('#mainNavbar');
         const secondaryNavbar = document.querySelector('#navBar');
+        const btnSearch = document.querySelector('#btnSearch');
+        const searchBar = document.querySelector('#searchBar');
+        const inputSearch = document.querySelector('#inputSearch') as HTMLInputElement | null;
+        const cancelSearch = document.querySelector('#cancelSearch');
         const btnNavbar = document.querySelector('#btnNavbar');
+        const btnInSearch = document.querySelector('#btnInSearch');
+        const listProducts = document.querySelector('#listProducts');        
+        const productsBar = document.querySelector('#productsBar');    
         let lastScrollY = window.scrollY;
+        let results = [];
 
         window.addEventListener('scroll', () => {
             if(lastScrollY < window.scrollY && lastScrollY > 45) {
@@ -49,6 +89,84 @@ import Dropdown from "./Dropdown.astro";
                 secondaryNavbar.classList.remove('hidden');
             } else {
                 secondaryNavbar.classList.add('hidden');
+            }
+        });
+
+        const handleSearch = async () => {
+            if (results.length == 0) {
+                const db = getFirestore();
+                const productsRef = collection(db, 'Products');
+                const snapshot = await getDocs(productsRef);
+                results = snapshot.docs.map(doc => doc.data());
+                return results;
+            }
+            return results;
+        };
+
+        inputSearch.addEventListener('change', async () => {
+            await searchAndUpdatePage();
+        });
+
+        btnInSearch.addEventListener('click', async () => {
+            await searchAndUpdatePage();
+        });
+
+        async function searchAndUpdatePage() {
+            const value = inputSearch.value;
+            if (value !== '') {
+                const products = await handleSearch();
+                const filteredResults = products.filter(product => product.name.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
+                updatePage(filteredResults);
+            } else {
+                productsBar.classList.add('-translate-y-[180px]');
+                listProducts.innerHTML = '';
+            }
+        }
+
+        function updatePage(products) {
+            productsBar.classList.remove('-translate-y-[180px]');
+            addProductsToPage(products);
+        }
+
+
+        function addProductsToPage(products: Array<any>) {
+            listProducts.innerHTML = '';
+            products.forEach(product => {
+                const a = document.createElement('a');
+                const article = document.createElement('article');
+                const img = document.createElement('img');
+                const p = document.createElement('p');
+
+                article.classList.add('flex', 'gap-5', 'items-center', 'hover:[&>p]:underline');
+                
+                a.setAttribute('href', "/product/" + product.name);
+                img.setAttribute('src', "data:image/png;base64," + product.image); 
+                img.setAttribute('alt', product.name); 
+                img.setAttribute('width', '50px');
+
+                p.textContent = product.name; 
+
+                a.appendChild(article)
+                article.appendChild(img);
+                article.appendChild(p);
+                
+                listProducts.appendChild(a);
+            });
+        }
+
+        btnSearch.addEventListener('click', () => {
+            if(!mainNavbar.classList.contains('-translate-y-[90px]')) {
+                mainNavbar.classList.add('-translate-y-[90px]');
+                searchBar.classList.remove('-translate-y-[90px]');
+            }
+        });
+
+        cancelSearch.addEventListener('click', () => {
+            if(!searchBar.classList.contains('-translate-y-[90px]')) {
+                searchBar.classList.add('-translate-y-[90px]');
+                mainNavbar.classList.remove('-translate-y-[90px]');
+                productsBar.classList.add('-translate-y-[180px]');
+                listProducts.innerHTML = '';
             }
         });
     }
