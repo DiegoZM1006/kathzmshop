@@ -6,11 +6,74 @@ import Layout from "../layouts/Layout.astro"
 
     <main>
 
-		<section class="w-[var(--page-width)] text-black mx-auto pt-10">
+		<section class="w-full lg:w-[var(--page-width)] text-black mx-auto pt-10 px-3 lg:md-0">
+
 			<h2 class="px-3 lg:px-0 text-3xl font-bold">Todos los productos</h2>
 
+			<section class="flex justify-between mt-5 text-sm">
+
+				<div class="flex gap-2">
+
+					<p>Filtrar: </p>
+
+					<div>
+						<label for="pet-select">Disponibilidad</label>
+						<select name="pets" id="pet-select" class="bg-transparent border-0">
+							<option value="">--Elige una opcion--</option>
+							<option value="dog">Disponible</option>
+							<option value="cat">Agotado</option>
+						</select>
+					</div>
+
+					<div>
+						<label for="pet-select">Categoria</label>
+						<select name="pets" id="pet-select" class="bg-transparent border-0">
+							<option value="">--Elige una opcion--</option>
+							<option value="dog">Hombre</option>
+							<option value="cat">Mujer</option>
+							<option value="hamster">Niños</option>
+						</select>
+					</div>
+
+					<div>
+						<label for="pet-select">Tipo</label>
+						<select name="pets" id="pet-select" class="bg-transparent border-0">
+							<option value="">--Elige una opcion--</option>
+							<option value="dog">Zapatos</option>
+							<option value="cat">Ropa</option>
+							<option value="hamster">Accesorios</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="flex gap-2">
+
+					<p>Ordenar: </p>
+
+					<div>
+						<label for="pet-select">Caracteristica</label>
+						<select name="pets" id="pet-select" class="bg-transparent border-0">
+							<option value="">--Elige una opcion--</option>
+							<option value="dog">Destacados</option>
+							<option value="dog">Precio mayor a menor</option>
+							<option value="cat">Precio menor a mayor</option>
+						</select>
+					</div>
+
+				</div>
+
+			</section>
+
 			<section class="px-3 lg:px-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3">
-				<p>Proximamente...</p>
+				
+
+
+			</section>
+
+			<section>
+
+
+
 			</section>
 
 		</section>
