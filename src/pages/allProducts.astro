@@ -1,5 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro"
+import ProductCard from '../components/ProductCard.astro';
+import fetchProducts from "../db"
+
+let allProducts;
+
+try {
+	allProducts = await fetchProducts();
+} catch (error) {
+	console.error(error.message);
+}
 ---
 
 <Layout title="KathZM Shop - Productos">
@@ -8,71 +18,102 @@ import Layout from "../layouts/Layout.astro"
 
 		<section class="w-full lg:w-[var(--page-width)] text-black mx-auto pt-10 px-3 lg:md-0">
 
-			<h2 class="px-3 lg:px-0 text-3xl font-bold">Todos los productos</h2>
+			<h2 class="text-3xl font-bold">Todos los productos</h2>
 
-			<section class="flex justify-between mt-5 text-sm">
-
-				<div class="flex gap-2">
-
-					<p>Filtrar: </p>
-
-					<div>
-						<label for="pet-select">Disponibilidad</label>
-						<select name="pets" id="pet-select" class="bg-transparent border-0">
-							<option value="">--Elige una opcion--</option>
-							<option value="dog">Disponible</option>
-							<option value="cat">Agotado</option>
-						</select>
+			<section class="mt-5 flex justify-between">
+				<button id="btnToFilterSort" type="button" class="btn cursor-pointer">
+					<div class="flex gap-3">
+						<svg width="24" height="24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+							<path fill-rule="evenodd" d="M4.833 6.5a1.667 1.667 0 1 1 3.334 0 1.667 1.667 0 0 1-3.334 0ZM4.05 7H2.5a.5.5 0 0 1 0-1h1.55a2.5 2.5 0 0 1 4.9 0h8.55a.5.5 0 0 1 0 1H8.95a2.5 2.5 0 0 1-4.9 0Zm11.117 6.5a1.667 1.667 0 1 0-3.334 0 1.667 1.667 0 0 0 3.334 0ZM13.5 11a2.5 2.5 0 0 1 2.45 2h1.55a.5.5 0 0 1 0 1h-1.55a2.5 2.5 0 0 1-4.9 0H2.5a.5.5 0 0 1 0-1h8.55a2.5 2.5 0 0 1 2.45-2Z" fill="currentColor"></path>
+						</svg>
+						<span>Filtrar y ordenar</span>
 					</div>
-
-					<div>
-						<label for="pet-select">Categoria</label>
-						<select name="pets" id="pet-select" class="bg-transparent border-0">
-							<option value="">--Elige una opcion--</option>
-							<option value="dog">Hombre</option>
-							<option value="cat">Mujer</option>
-							<option value="hamster">Niños</option>
-						</select>
-					</div>
-
-					<div>
-						<label for="pet-select">Tipo</label>
-						<select name="pets" id="pet-select" class="bg-transparent border-0">
-							<option value="">--Elige una opcion--</option>
-							<option value="dog">Zapatos</option>
-							<option value="cat">Ropa</option>
-							<option value="hamster">Accesorios</option>
-						</select>
-					</div>
-				</div>
-
-				<div class="flex gap-2">
-
-					<p>Ordenar: </p>
-
-					<div>
-						<label for="pet-select">Caracteristica</label>
-						<select name="pets" id="pet-select" class="bg-transparent border-0">
-							<option value="">--Elige una opcion--</option>
-							<option value="dog">Destacados</option>
-							<option value="dog">Precio mayor a menor</option>
-							<option value="cat">Precio menor a mayor</option>
-						</select>
-					</div>
-
-				</div>
-
+				</button>
+				<span class="text-md text-gray-400">{allProducts.length} productos</span>	
 			</section>
 
-			<section class="px-3 lg:px-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3">
+			<section id="formFilterSort" class="z-30 translate-x-full fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.5)] text-black">
+				<section class="flex flex-col bg-white transition-transform ease-in-out z-40 h-full border-l border-gray-300 shadow-2xl w-80 ml-auto">
+
+					<section class="flex flex-row px-3 py-2 items-center border-b border-gray">
+						<div class="flex flex-col flex-grow justify-center items-center">
+							<h2>Filtrar y Ordenar</h2>
+							<span class="text-md text-gray-400">{allProducts.length} productos</span>	
+						</div>
+						<button type="button" id="btnCancelFilter" class="cursor-pointer">
+							<svg xmlns="http://www.w3.org/2000/svg" id="cancelSearch" class="cursor-pointer" width="36" height="36" viewBox="0 0 24 24" style="fill: rgb(0, 0, 0);transform: ;msFilter:;"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
+						</button>
+					</section>
+			
+					<section class="flex-grow flex flex-col gap-5 px-5 py-5">
+			
+						<div class="flex items-center gap-2">
+							<p class="hidden">Filtrar: </p>
+			
+							<details class="dropdown relative list-none">
+								<summary class="btn list-none flex items-center">Disponibilidad <svg id="iconDropdown" class="w-2.5 h-2.5 ms-2 transition-all" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+								</svg></summary>
+								<ul class="p-5 shadow-xl border menu dropdown-content bg-white bg-base-100 rounded-box w-[200px] h-auto absolute top-50 z-10">
+								<li class="flex items-center gap-3">
+									<input type="checkbox" name="inStock" id="inStock">
+									<label for="inStock">En inventario</label>
+								</li>
+								<li class="flex items-center gap-3">
+									<input type="checkbox" name="outStock" id="outStock">
+									<label for="outStock">Agotados</label>
+								</li>
+								</ul>
+							</details>
+						</div>
+			
+						<div class="flex items-center gap-2">
+							<p class="hidden">Filtrar: </p>
+			
+							<details class="dropdown relative list-none">
+								<summary class="btn list-none flex items-center">Precio <svg id="iconDropdown" class="w-2.5 h-2.5 ms-2 transition-all" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+								</svg></summary>
+								<ul class="p-5 shadow-xl border menu dropdown-content bg-white bg-base-100 rounded-box w-[200px] h-auto absolute top-50 z-[9]">
+								<li class="flex items-center gap-3">
+									<input type="checkbox" name="inStock" id="inStock">
+									<label for="inStock">En inventario</label>
+								</li>
+								<li class="flex items-center gap-3">
+									<input type="checkbox" name="outStock" id="outStock">
+									<label for="outStock">Agotados</label>
+								</li>
+								</ul>
+							</details>
+						</div>
+						
+						<div class="flex items-center gap-2">
+							<p>Ordenar: </p>
+			
+							<select name="select" class="bg-transparent py-2 px-2 border-black border-2">
+								<option value="value1">Destacados</option>
+								<option value="value2">Precio mayor a menor</option>
+								<option value="value3">Precio menor a mayor</option>
+							</select>
+						</div>
+					</section>
+			
+					<section class="text-center border-t border-gray py-4 basis-0">
+						<button type="button" class="px-3 py-2 bg-black text-white shadow-sm rounded ">Eliminar todo</button>
+					</section>
+						
+				</section>
+			</section>
+
+			<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3 z-[-10]">
 				
-
-
-			</section>
-
-			<section>
-
-
+				{
+					allProducts?.map((item) => (
+					  <a href={"/product/" + item.name}>
+						  <ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} ></ProductCard>
+					  </a>
+					))
+				}	
 
 			</section>
 
@@ -81,3 +122,27 @@ import Layout from "../layouts/Layout.astro"
 	</main>
     
 </Layout>
+
+<script>
+
+	const btnCancelFilter = document.querySelector('#btnCancelFilter');
+	const formFilterSort = document.querySelector('#formFilterSort');
+	const btnToFilterSort = document.querySelector('#btnToFilterSort');
+	const bodySection = document.querySelector('#bodySection');
+
+	formFilterSort.addEventListener('click', () => {
+		formFilterSort.classList.add('translate-x-full');
+		bodySection.className = '';
+	});
+	
+	btnToFilterSort.addEventListener('click', () => {
+		formFilterSort.classList.remove('translate-x-full');
+		bodySection.className = 'overflow-hidden';
+	});
+
+	btnCancelFilter.addEventListener('click', () => {
+		formFilterSort.classList.add('translate-x-full');
+		bodySection.className = '';
+	});
+
+</script>
