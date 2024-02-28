@@ -109,13 +109,22 @@ try {
 				
 				{
 					allProducts?.map((item) => (
-					  <a href={"/product/" + item.name}>
+					  <a href={"/product/" + item.name} class="itemProduct">
 						  <ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} ></ProductCard>
 					  </a>
 					))
 				}	
 
 			</section>
+
+			<nav aria-label="Page navigation example" class="mt-5">
+				<ul class="listPage inline-flex -space-x-px text-sm w-full justify-center items-center">
+					<li>
+						<a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+					</li>	
+				</ul>
+			</nav>
+
 
 		</section>
 
@@ -130,11 +139,85 @@ try {
 	const btnToFilterSort = document.querySelector('#btnToFilterSort');
 	const bodySection = document.querySelector('#bodySection');
 
-	formFilterSort.addEventListener('click', () => {
-		formFilterSort.classList.add('translate-x-full');
-		bodySection.className = '';
-	});
-	
+	let thisPage = 1;
+	let limit = 1;
+	let list = document.querySelectorAll('.itemProduct');
+
+	function loadItem() {
+
+		let beginGet = limit * (thisPage - 1);
+    	let endGet = limit * thisPage - 1;	
+
+		list.forEach((item, key) => {
+			if (key >= beginGet && key <= endGet) {
+				item.classList.remove('hidden');
+				item.classList.add('block');
+			} else {
+				item.classList.remove('block');
+				item.classList.add('hidden');
+			}
+		});
+
+		listPage();
+	}
+
+	loadItem();
+
+	function listPage() {
+
+		let count = Math.ceil(list.length / limit);
+		document.querySelector('.listPage').innerHTML = '';
+
+		let prev = document.createElement('li');
+		prev.innerText = 'Anterior';
+		prev.className = 'flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
+		document.querySelector('.listPage').appendChild(prev);
+
+		if(thisPage != 1) {
+			prev.classList.add('disabled');
+		} else {
+			prev.classList.remove('disabled');
+		}
+
+		for (let i = 1; i < count + 1; i++) {
+			let newPage = document.createElement('li');
+			newPage.innerText = i + '';
+			newPage.className = 'listNums flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
+
+			if (i == thisPage) {
+				newPage.className = 'listNums flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white';
+			}
+
+			document.querySelector('.listPage').appendChild(newPage);
+		}
+
+		let next = document.createElement('li');
+		next.innerText = 'Siguiente';
+		next.className = 'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
+		document.querySelector('.listPage').appendChild(next);
+
+		if(thisPage != count) {
+			next.classList.add('disabled');
+		} else {
+			next.classList.remove('disabled');
+		}
+
+		const listNums = document.querySelectorAll('.listNums');
+
+		for (let i = 0; i < listNums.length; i++) {
+			listNums[i].addEventListener("click", () => {
+				const num = parseInt(listNums[i].textContent);
+				changePage(num);
+			});
+		}
+
+	}
+
+	function changePage(i) {
+		thisPage = i;
+		loadItem();
+	}
+
 	btnToFilterSort.addEventListener('click', () => {
 		formFilterSort.classList.remove('translate-x-full');
 		bodySection.className = 'overflow-hidden';
