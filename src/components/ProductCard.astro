@@ -14,8 +14,8 @@ const classNameAvailable = available ? "rounded bg-green-200 px-2 py-1" : "round
 ---
 
 <article class="rounded px-3 py-4">
-    <header>
-        <img src=`${productImage}` alt=`Product ${productName}` width="250px">
+    <header class="flex justify-center">
+        <img src=`${productImage}` alt=`Product ${productName}` width="200px">
     </header>
     <section class="sm:flex justify-between items-center pt-4">
         <div class=`${classNameAvailable}`>
@@ -24,4 +24,5 @@ const classNameAvailable = available ? "rounded bg-green-200 px-2 py-1" : "round
         <p class="mt-3 sm:mt-0 text-xl tracking-tight">{USDollar.format(productPrice)} USD</p>
     </section>
     <h3 class="mt-3 sm:mt-0 text-md sm:py-4 font-semibold">{productName}</h3>
+    <p class="hidden">15</p>
 </article>

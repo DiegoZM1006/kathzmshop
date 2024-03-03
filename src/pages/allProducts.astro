@@ -10,6 +10,9 @@ try {
 } catch (error) {
 	console.error(error.message);
 }
+
+const maxPrice = Math.max(...allProducts.map(item => item.price));
+const minPrice = Math.min(...allProducts.map(item => item.price));
 ---
 
 <Layout title="KathZM Shop - Productos">
@@ -90,10 +93,10 @@ try {
 						<div class="flex items-center gap-2">
 							<p>Ordenar: </p>
 			
-							<select name="select" class="bg-transparent py-2 px-2 border-black border-2">
-								<option value="value1">Destacados</option>
-								<option value="value2">Precio mayor a menor</option>
-								<option value="value3">Precio menor a mayor</option>
+							<select id="optionsToSort" name="select" class="bg-transparent py-2 px-2 border-black border-2">
+								<option value="Destacados">Destacados</option>
+								<option value="Precio mayor a menor">Precio mayor a menor</option>
+								<option value="Precio menor a mayor">Precio menor a mayor</option>
 							</select>
 						</div>
 					</section>
@@ -117,12 +120,11 @@ try {
 
 			</section>
 
-			<nav aria-label="Page navigation example" class="mt-5">
-				<ul class="listPage inline-flex -space-x-px text-sm w-full justify-center items-center">
-					<li>
-						<a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-					</li>	
+			<nav aria-label="Page navigation example" class="mt-5 flex justify-center items-center">
+				<div class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listPrevElement">Anterior</div>
+				<ul class="listPage inline-flex -space-x-px text-sm justify-center items-center">
 				</ul>
+				<div class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listNextElement">Siguiente</div>	
 			</nav>
 
 
@@ -138,9 +140,12 @@ try {
 	const formFilterSort = document.querySelector('#formFilterSort');
 	const btnToFilterSort = document.querySelector('#btnToFilterSort');
 	const bodySection = document.querySelector('#bodySection');
-
+	const listPrev = document.querySelector('.listPrevElement');
+	const listNext = document.querySelector('.listNextElement');
+	const optionsToSort = document.querySelector('#optionsToSort');
+	
 	let thisPage = 1;
-	let limit = 1;
+	let limit = 4;
 	let list = document.querySelectorAll('.itemProduct');
 
 	function loadItem() {
@@ -166,20 +171,11 @@ try {
 	function listPage() {
 
 		let count = Math.ceil(list.length / limit);
+		let startPage = Math.max(1, thisPage - 2); 
+		let endPage = Math.min(startPage + 4, count);
 		document.querySelector('.listPage').innerHTML = '';
 
-		let prev = document.createElement('li');
-		prev.innerText = 'Anterior';
-		prev.className = 'flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
-		document.querySelector('.listPage').appendChild(prev);
-
-		if(thisPage != 1) {
-			prev.classList.add('disabled');
-		} else {
-			prev.classList.remove('disabled');
-		}
-
-		for (let i = 1; i < count + 1; i++) {
+		for (let i = startPage; i <= endPage; i++) {
 			let newPage = document.createElement('li');
 			newPage.innerText = i + '';
 			newPage.className = 'listNums flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
@@ -189,17 +185,6 @@ try {
 			}
 
 			document.querySelector('.listPage').appendChild(newPage);
-		}
-
-		let next = document.createElement('li');
-		next.innerText = 'Siguiente';
-		next.className = 'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
-		document.querySelector('.listPage').appendChild(next);
-
-		if(thisPage != count) {
-			next.classList.add('disabled');
-		} else {
-			next.classList.remove('disabled');
 		}
 
 		const listNums = document.querySelectorAll('.listNums');
@@ -218,6 +203,28 @@ try {
 		loadItem();
 	}
 
+	function chagenToFilterOrSort(option: string) {
+		if (option === 'Destacados') {
+			list.forEach(element => {
+				console.log(element.textContent);
+			});
+		}
+		// Coming soon...
+	}
+
+	listPrev.addEventListener("click", () => {
+		if (thisPage != 1) {
+			changePage(thisPage - 1)
+		}
+	});
+
+	listNext.addEventListener("click", () => {
+		const count = Math.ceil(list.length / limit);
+		if (thisPage != count) {
+			changePage(thisPage + 1)
+		}
+	});
+
 	btnToFilterSort.addEventListener('click', () => {
 		formFilterSort.classList.remove('translate-x-full');
 		bodySection.className = 'overflow-hidden';
@@ -226,6 +233,14 @@ try {
 	btnCancelFilter.addEventListener('click', () => {
 		formFilterSort.classList.add('translate-x-full');
 		bodySection.className = '';
+	});
+
+	optionsToSort.addEventListener('change', (event) => {
+		for (let i = 0; i < 3; i++) {
+			if (optionsToSort[i].selected === true) {
+				chagenToFilterOrSort(optionsToSort[i].value);
+			}
+		}
 	});
 
 </script>

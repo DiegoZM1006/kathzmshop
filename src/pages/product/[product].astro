@@ -34,7 +34,7 @@ const classNameAvailable = productAvailability ? "rounded bg-green-200 px-2 py-1
     <main>
 
         <section class="w-full lg:w-[var(--page-width)] justify-center items-center mx-auto mt-10 flex flex-col px-3 lg:px-0 lg:flex-row">
-            <img src={"data:image/png;base64," + productImage} alt="" class="w-[90%] max-w-[650px] max-h-[465px]">
+            <img src={"data:image/png;base64," + productImage} alt="" class="w-[90%] max-w-[550px]">
             <article class="text-black">
                 <small class="uppercase">{productBrand}</small>
                 <h1 id="productName" class="font-semibold text-6xl mt-[-5px]">{productName}</h1>
@@ -48,7 +48,7 @@ const classNameAvailable = productAvailability ? "rounded bg-green-200 px-2 py-1
                 </div>
                 <div class="pt-5">
                     <p>Tallas</p>
-                    <div class="flex pt-3 gap-2">
+                    <div class="flex pt-3 gap-2 flex-wrap">
                         {
                             productSizes?.map((item) => (
                                 <p class="rounded-full bg-black text-center text-white px-5 py-1 w-[65px]">{item}</p>
