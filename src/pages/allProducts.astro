@@ -58,14 +58,20 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 								</svg></summary>
 								<ul class="p-5 shadow-xl border menu dropdown-content bg-white bg-base-100 rounded-box w-[200px] h-auto absolute top-50 z-10">
-								<li class="flex items-center gap-3">
-									<input type="checkbox" name="inStock" id="inStock">
-									<label for="inStock">En inventario</label>
-								</li>
-								<li class="flex items-center gap-3">
-									<input type="checkbox" name="outStock" id="outStock">
-									<label for="outStock">Agotados</label>
-								</li>
+									<fieldset>
+										<div class="flex items-center gap-3">
+											<input type="radio" name="available" id="inStockAndOutStock" checked>
+											<label for="inStockAndOutStock">Todos</label>
+										</div>
+										<div class="flex items-center gap-3">
+											<input type="radio" name="available" id="inStock">
+											<label for="inStock">En inventario</label>
+										</div>
+										<div class="flex items-center gap-3">
+											<input type="radio" name="available" id="outStock">
+											<label for="outStock">Agotados</label>
+										</div>
+									</fieldset>
 								</ul>
 							</details>
 						</div>
@@ -78,14 +84,16 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 								</svg></summary>
 								<ul class="p-5 shadow-xl border menu dropdown-content bg-white bg-base-100 rounded-box w-[200px] h-auto absolute top-50 z-[9]">
-								<li class="flex items-center gap-3">
-									<input type="checkbox" name="inStock" id="inStock">
-									<label for="inStock">En inventario</label>
-								</li>
-								<li class="flex items-center gap-3">
-									<input type="checkbox" name="outStock" id="outStock">
-									<label for="outStock">Agotados</label>
-								</li>
+									<span id="spanMinPrice" class="text-gray-500" data-min-price={minPrice}>Min Precio: {minPrice}</span>
+									<li class="flex flex-row items-center gap-3 mb-3 mt-2">
+										<label for="minPrice">$</label>
+										<input type="number" name="minPrice" id="minPrice" placeholder="Desde" class="w-full py-1 px-2 dark:text-white" autocomplete="off"></input>
+									</li>
+									<span id="spanMaxPrice" class="text-gray-500" data-max-price={maxPrice}>Max Precio: {maxPrice}</span>
+									<li class="flex items-center gap-3 mt-2">
+										<label for="maxPrice">$</label>
+										<input type="number" name="maxPrice" id="maxPrice" placeholder="Hasta" class="w-full py-1 px-2 dark:text-white" autocomplete="off"></input>
+									</li>
 								</ul>
 							</details>
 						</div>
@@ -108,12 +116,12 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 				</section>
 			</section>
 
-			<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3 z-[-10]">
+			<section id="sectionListProducts" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3 z-[-10]">
 				
 				{
 					allProducts?.map((item) => (
 					  <a href={"/product/" + item.name} class="itemProduct">
-						  <ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} ></ProductCard>
+						  <ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} interactions={item.interactions}></ProductCard>
 					  </a>
 					))
 				}	
@@ -143,17 +151,23 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 	const listPrev = document.querySelector('.listPrevElement');
 	const listNext = document.querySelector('.listNextElement');
 	const optionsToSort = document.querySelector('#optionsToSort');
-	
+	const minPrice = document.querySelector('#minPrice') as HTMLInputElement;
+	const maxPrice = document.querySelector('#maxPrice') as HTMLInputElement;
+	const mainListProducts = document.querySelectorAll('.itemProduct > article');
+	const checkboxInStock = document.querySelector('#inStock') as HTMLInputElement;
+	const checkboxOutStock = document.querySelector('#outStock') as HTMLInputElement;
+	const checboxInStockAndOutStock = document.querySelector('#inStockAndOutStock') as HTMLInputElement;
+
 	let thisPage = 1;
 	let limit = 4;
-	let list = document.querySelectorAll('.itemProduct');
+	let mainList = document.querySelectorAll('.itemProduct');
 
 	function loadItem() {
 
 		let beginGet = limit * (thisPage - 1);
     	let endGet = limit * thisPage - 1;	
 
-		list.forEach((item, key) => {
+		mainList.forEach((item, key) => {
 			if (key >= beginGet && key <= endGet) {
 				item.classList.remove('hidden');
 				item.classList.add('block');
@@ -170,7 +184,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 
 	function listPage() {
 
-		let count = Math.ceil(list.length / limit);
+		let count = Math.ceil(mainList.length / limit);
 		let startPage = Math.max(1, thisPage - 2); 
 		let endPage = Math.min(startPage + 4, count);
 		document.querySelector('.listPage').innerHTML = '';
@@ -204,12 +218,69 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 	}
 
 	function chagenToFilterOrSort(option: string) {
-		if (option === 'Destacados') {
-			list.forEach(element => {
-				console.log(element.textContent);
+		const list = document.querySelectorAll('.itemProduct > article');
+		const container = document.querySelector('#sectionListProducts');
+		container.innerHTML = '';
+
+		let comparator;
+
+		switch (option) {
+			case 'destacados':
+				comparator = (a, b) => parseInt(b.element.getAttribute('data-interactions')) - parseInt(a.element.getAttribute('data-interactions'));
+				break;
+			case 'precio mayor a menor':
+				comparator = (a, b) => parseInt(b.element.getAttribute('data-price')) - parseInt(a.element.getAttribute('data-price'));
+				break;
+			case 'precio menor a mayor':
+				comparator = (a, b) => parseInt(a.element.getAttribute('data-price')) - parseInt(b.element.getAttribute('data-price'));
+				break;
+			default:
+				return;
+		}
+
+		const sortedList = Array.from(list).map(element => ({ count: parseInt(element.getAttribute('data-interactions')), element })).sort(comparator);
+
+		sortedList.forEach(item => {
+			const anchor = document.createElement('a');
+			anchor.setAttribute('href', "/product/" + item.element.getAttribute('data-name'));
+			anchor.classList.add('itemProduct');
+			anchor.appendChild(item.element);
+			container.appendChild(anchor);
+		});
+
+		mainList = document.querySelectorAll('.itemProduct');
+		loadItem();
+	}
+
+	function filterProductsByAvailable() {
+		const container = document.querySelector('#sectionListProducts');
+		container.innerHTML = '';
+
+		let newList = Array.from(mainListProducts);
+
+		if (checboxInStockAndOutStock.checked) {
+			newList = newList.filter(element => true);
+		} else {
+			const isCheckedInStock = checkboxInStock.checked;
+			const isCheckedOutStock = checkboxOutStock.checked;
+
+			newList = newList.filter(element => {
+				const isAvailable = element.hasAttribute('data-available');
+				return (isCheckedInStock && isAvailable) || (isCheckedOutStock && !isAvailable);
 			});
 		}
-		// Coming soon...
+
+		newList.forEach(item => {
+			const anchor = document.createElement('a');
+			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
+			anchor.classList.add('itemProduct');
+			anchor.appendChild(item);
+			container.appendChild(anchor);
+		});
+
+		thisPage = 1;
+		mainList = document.querySelectorAll('.itemProduct');
+		loadItem();
 	}
 
 	listPrev.addEventListener("click", () => {
@@ -219,7 +290,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 	});
 
 	listNext.addEventListener("click", () => {
-		const count = Math.ceil(list.length / limit);
+		const count = Math.ceil(mainList.length / limit);
 		if (thisPage != count) {
 			changePage(thisPage + 1)
 		}
@@ -235,12 +306,73 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 		bodySection.className = '';
 	});
 
-	optionsToSort.addEventListener('change', (event) => {
+	optionsToSort.addEventListener('change', () => {
 		for (let i = 0; i < 3; i++) {
 			if (optionsToSort[i].selected === true) {
-				chagenToFilterOrSort(optionsToSort[i].value);
+				chagenToFilterOrSort(optionsToSort[i].value.toLowerCase());
 			}
 		}
 	});
+
+	minPrice.addEventListener('change', () => {
+		const valueMinPrice = (minPrice.value != '') ? minPrice.valueAsNumber : 0;
+		const list = mainListProducts;
+		const container = document.querySelector('#sectionListProducts');
+		container.innerHTML = '';
+
+		const newList = Array.from(list).filter((element) => {
+			const price = parseFloat(element.getAttribute('data-price'));
+			if (maxPrice.value != '') {
+				return price >= valueMinPrice && price <= parseFloat(maxPrice.value);
+			} else {
+				return price >= valueMinPrice;
+			}
+		});
+
+		newList.forEach(item => {
+			const anchor = document.createElement('a');
+			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
+			anchor.classList.add('itemProduct');
+			anchor.appendChild(item);
+			container.appendChild(anchor);
+		});
+
+		thisPage = 1;
+		mainList = document.querySelectorAll('.itemProduct');
+		loadItem();
+	});
+
+	maxPrice.addEventListener('change', () => {
+		const valueMaxPrice = (maxPrice.value != '') ? maxPrice.valueAsNumber : parseFloat(document.querySelector('#spanMaxPrice').getAttribute('data-max-price'));
+		const list = mainListProducts;
+		const container = document.querySelector('#sectionListProducts');
+		container.innerHTML = '';
+
+		const newList = Array.from(list).filter((element) => {
+			const price = parseFloat(element.getAttribute('data-price'));
+			if (minPrice.value != '') {
+				return price >= parseFloat(minPrice.value) && price <= valueMaxPrice;
+			} else {
+				return price <= valueMaxPrice;
+			}
+		});
+
+		newList.forEach(item => {
+			const anchor = document.createElement('a');
+			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
+			anchor.classList.add('itemProduct');
+			anchor.appendChild(item);
+			container.appendChild(anchor);
+		});
+
+		thisPage = 1;
+		mainList = document.querySelectorAll('.itemProduct');
+		loadItem();
+	});
+
+	checboxInStockAndOutStock.addEventListener('change', filterProductsByAvailable);
+	checkboxInStock.addEventListener('change', filterProductsByAvailable);
+	checkboxOutStock.addEventListener('change', filterProductsByAvailable);
+
 
 </script>
