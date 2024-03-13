@@ -32,7 +32,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 						<span>Filtrar y ordenar</span>
 					</div>
 				</button>
-				<span class="text-md text-gray-400">{allProducts.length} productos</span>	
+				<span class="lengthProducts text-md text-gray-400">{allProducts.length} productos</span>	
 			</section>
 
 			<section id="formFilterSort" class="z-30 translate-x-full fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.5)] text-black">
@@ -41,7 +41,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 					<section class="flex flex-row px-3 py-2 items-center border-b border-gray">
 						<div class="flex flex-col flex-grow justify-center items-center">
 							<h2>Filtrar y Ordenar</h2>
-							<span class="text-md text-gray-400">{allProducts.length} productos</span>	
+							<span class="lengthProducts text-md text-gray-400">{allProducts.length} productos</span>	
 						</div>
 						<button type="button" id="btnCancelFilter" class="cursor-pointer">
 							<svg xmlns="http://www.w3.org/2000/svg" id="cancelSearch" class="cursor-pointer" width="36" height="36" viewBox="0 0 24 24" style="fill: rgb(0, 0, 0);transform: ;msFilter:;"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
@@ -84,12 +84,12 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 								</svg></summary>
 								<ul class="p-5 shadow-xl border menu dropdown-content bg-white bg-base-100 rounded-box w-[200px] h-auto absolute top-50 z-[9]">
-									<span id="spanMinPrice" class="text-gray-500" data-min-price={minPrice}>Min Precio: {minPrice}</span>
+									<span id="spanMinPrice" class="text-gray-500" data-min-price={minPrice}> Precio Min: {minPrice}</span>
 									<li class="flex flex-row items-center gap-3 mb-3 mt-2">
 										<label for="minPrice">$</label>
 										<input type="number" name="minPrice" id="minPrice" placeholder="Desde" class="w-full py-1 px-2 dark:text-white" autocomplete="off"></input>
 									</li>
-									<span id="spanMaxPrice" class="text-gray-500" data-max-price={maxPrice}>Max Precio: {maxPrice}</span>
+									<span id="spanMaxPrice" class="text-gray-500" data-max-price={maxPrice}> Precio Max: {maxPrice}</span>
 									<li class="flex items-center gap-3 mt-2">
 										<label for="maxPrice">$</label>
 										<input type="number" name="maxPrice" id="maxPrice" placeholder="Hasta" class="w-full py-1 px-2 dark:text-white" autocomplete="off"></input>
@@ -157,12 +157,22 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 	const checkboxInStock = document.querySelector('#inStock') as HTMLInputElement;
 	const checkboxOutStock = document.querySelector('#outStock') as HTMLInputElement;
 	const checboxInStockAndOutStock = document.querySelector('#inStockAndOutStock') as HTMLInputElement;
+	const lengthProducts = document.querySelectorAll('.lengthProducts');
 
 	let thisPage = 1;
 	let limit = 4;
 	let mainList = document.querySelectorAll('.itemProduct');
 
 	function loadItem() {
+
+		const contLengthProducts = mainList.length;
+		const totalProducts = mainListProducts.length;
+
+		const text = contLengthProducts !== totalProducts ? `${contLengthProducts} de ${totalProducts} productos` : `${totalProducts} productos`;
+
+		lengthProducts.forEach(item => {
+			item.textContent = text;
+		});
 
 		let beginGet = limit * (thisPage - 1);
     	let endGet = limit * thisPage - 1;	
@@ -259,16 +269,100 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 		let newList = Array.from(mainListProducts);
 
 		if (checboxInStockAndOutStock.checked) {
-			newList = newList.filter(element => true);
+			if(minPrice.value == '' && maxPrice.value == '') {
+				newList = newList.filter(element => true);
+			} else {
+				newList = newList.filter(element => {
+					const valueMaxPrice = (maxPrice.value != '') ? maxPrice.valueAsNumber : parseFloat(document.querySelector('#spanMaxPrice').getAttribute('data-max-price'));
+					const valueMinPrice = (minPrice.value != '') ? minPrice.valueAsNumber : 0;
+					const price = parseFloat(element.getAttribute('data-price'));
+
+					if (minPrice.value != '' && maxPrice.value != '') {
+						return (price >= valueMinPrice && price <= valueMaxPrice);
+					} else if (minPrice.value != '') {
+						return (price >= valueMinPrice);
+					} else if (maxPrice.value != '') {
+						return (price <= valueMaxPrice);
+					}
+				});
+			}
 		} else {
 			const isCheckedInStock = checkboxInStock.checked;
 			const isCheckedOutStock = checkboxOutStock.checked;
 
 			newList = newList.filter(element => {
 				const isAvailable = element.hasAttribute('data-available');
+				const valueMaxPrice = (maxPrice.value != '') ? maxPrice.valueAsNumber : parseFloat(document.querySelector('#spanMaxPrice').getAttribute('data-max-price'));
+				const valueMinPrice = (minPrice.value != '') ? minPrice.valueAsNumber : 0;
+				const price = parseFloat(element.getAttribute('data-price'));
+
+				if (minPrice.value != null && maxPrice.value != null) {
+					return (isCheckedInStock && isAvailable && price >= valueMinPrice && price <= valueMaxPrice) || (isCheckedOutStock && !isAvailable && price >= valueMinPrice && price <= valueMaxPrice);
+				} else if (minPrice.value != '') {
+					return (isCheckedInStock && isAvailable && price >= valueMinPrice) || (isCheckedOutStock && !isAvailable && price >= valueMinPrice);
+				} else if (maxPrice.value != '') {
+					return (isCheckedInStock && isAvailable && price <= valueMaxPrice) || (isCheckedOutStock && !isAvailable && price <= valueMaxPrice);
+				}
 				return (isCheckedInStock && isAvailable) || (isCheckedOutStock && !isAvailable);
 			});
 		}
+
+		newList.forEach(item => {
+			const anchor = document.createElement('a');
+			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
+			anchor.classList.add('itemProduct');
+			anchor.appendChild(item);
+			container.appendChild(anchor);
+		});
+
+		thisPage = 1;
+		mainList = document.querySelectorAll('.itemProduct');
+		loadItem();
+	}
+
+	function filterProductsByPrice() {
+		const valueMaxPrice = (maxPrice.value != '') ? maxPrice.valueAsNumber : parseFloat(document.querySelector('#spanMaxPrice').getAttribute('data-max-price'));
+		const valueMinPrice = (minPrice.value != '') ? minPrice.valueAsNumber : 0;
+		const list = mainListProducts;
+		const container = document.querySelector('#sectionListProducts');
+		container.innerHTML = '';
+
+		const newList = Array.from(list).filter((element) => {
+			const price = parseFloat(element.getAttribute('data-price'));
+			const isAvailable = element.hasAttribute('data-available');
+
+			if (checboxInStockAndOutStock.checked) {
+				if (minPrice.value != '' && maxPrice.value != '') {
+				return price >= parseFloat(minPrice.value) && price <= valueMaxPrice;
+				} else if(minPrice.value != '') {
+					return price >= valueMinPrice;
+				} else if(maxPrice.value != '') {
+					return price <= valueMaxPrice;
+				} else {
+					return element;
+				}
+			} else if(checkboxInStock.checked) {
+				if (minPrice.value != '' && maxPrice.value != '') {
+				return price >= parseFloat(minPrice.value) && price <= valueMaxPrice && isAvailable;
+				} else if(minPrice.value != '') {
+					return price >= valueMinPrice && isAvailable;
+				} else if(maxPrice.value != '') {
+					return price <= valueMaxPrice && isAvailable;
+				} else {
+					return element && isAvailable;
+				}
+			} else if(checkboxOutStock.checked) {
+				if (minPrice.value != '' && maxPrice.value != '') {
+				return price >= parseFloat(minPrice.value) && price <= valueMaxPrice && !isAvailable;
+				} else if(minPrice.value != '') {
+					return price >= valueMinPrice && !isAvailable;
+				} else if(maxPrice.value != '') {
+					return price <= valueMaxPrice && !isAvailable;
+				} else {
+					return element && !isAvailable;
+				}
+			}
+		});
 
 		newList.forEach(item => {
 			const anchor = document.createElement('a');
@@ -314,62 +408,8 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 		}
 	});
 
-	minPrice.addEventListener('change', () => {
-		const valueMinPrice = (minPrice.value != '') ? minPrice.valueAsNumber : 0;
-		const list = mainListProducts;
-		const container = document.querySelector('#sectionListProducts');
-		container.innerHTML = '';
-
-		const newList = Array.from(list).filter((element) => {
-			const price = parseFloat(element.getAttribute('data-price'));
-			if (maxPrice.value != '') {
-				return price >= valueMinPrice && price <= parseFloat(maxPrice.value);
-			} else {
-				return price >= valueMinPrice;
-			}
-		});
-
-		newList.forEach(item => {
-			const anchor = document.createElement('a');
-			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
-			anchor.classList.add('itemProduct');
-			anchor.appendChild(item);
-			container.appendChild(anchor);
-		});
-
-		thisPage = 1;
-		mainList = document.querySelectorAll('.itemProduct');
-		loadItem();
-	});
-
-	maxPrice.addEventListener('change', () => {
-		const valueMaxPrice = (maxPrice.value != '') ? maxPrice.valueAsNumber : parseFloat(document.querySelector('#spanMaxPrice').getAttribute('data-max-price'));
-		const list = mainListProducts;
-		const container = document.querySelector('#sectionListProducts');
-		container.innerHTML = '';
-
-		const newList = Array.from(list).filter((element) => {
-			const price = parseFloat(element.getAttribute('data-price'));
-			if (minPrice.value != '') {
-				return price >= parseFloat(minPrice.value) && price <= valueMaxPrice;
-			} else {
-				return price <= valueMaxPrice;
-			}
-		});
-
-		newList.forEach(item => {
-			const anchor = document.createElement('a');
-			anchor.setAttribute('href', "/product/" + item.getAttribute('data-name'));
-			anchor.classList.add('itemProduct');
-			anchor.appendChild(item);
-			container.appendChild(anchor);
-		});
-
-		thisPage = 1;
-		mainList = document.querySelectorAll('.itemProduct');
-		loadItem();
-	});
-
+	maxPrice.addEventListener('change', filterProductsByPrice);
+	minPrice.addEventListener('change', filterProductsByPrice);
 	checboxInStockAndOutStock.addEventListener('change', filterProductsByAvailable);
 	checkboxInStock.addEventListener('change', filterProductsByAvailable);
 	checkboxOutStock.addEventListener('change', filterProductsByAvailable);
