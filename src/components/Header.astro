@@ -125,7 +125,11 @@ import Dropdown from "./Dropdown.astro";
 
         function updatePage(products) {
             productsBar.classList.remove('-translate-y-[180px]');
-            addProductsToPage(products);
+            if(products.length > 0) {
+                addProductsToPage(products);
+            } else {
+                listProducts.innerHTML = '<p>No hay productos con esa descripción</a>'
+            }
         }
 
 

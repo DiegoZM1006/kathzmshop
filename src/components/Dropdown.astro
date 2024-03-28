@@ -1,6 +1,7 @@
-<li>
+<li id="btnCategories" class="lg:[&>.dropdown-menu]:hover:block lg:[&>div>#iconDropdown]:hover:rotate-180">
   <div class="flex items-center px-5 hover:bg-gray-500 lg:hover:bg-transparent py-1">
-    <a href="/brands">Categorias</a>
+    <a href="/brands" class="hidden lg:block">Categorias</a>
+    <p class="lg:hidden">Categorias</p>
     
     <svg id="iconDropdown" class="w-2.5 h-2.5 ms-2 transition-all" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -8,7 +9,7 @@
     
   </div>
 
-  <ul class="dropdown-menu bg-black hidden w-full [&>li>a]:pl-8 text-sm lg:absolute lg:w-[150px] pt-2 z-10 text-gray-700 dark:text-gray-200 transition-all" aria-labelledby="dropdownHoverButton">
+  <ul id="dropdownMenu" class="dropdown-menu bg-black hidden w-full [&>li>a]:pl-8 text-sm lg:absolute lg:w-[150px] pt-2 z-10 text-white" aria-labelledby="dropdownHoverButton">
     <li class="block">
       <a href="/categories/man" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hombre</a>
     </li>
@@ -22,12 +23,19 @@
 
 </li>
 
-<style>
-  li:hover > .dropdown-menu  {
-    display: block;
-  }
+<script>
 
-  li:hover #iconDropdown {
-    rotate: 180deg;
-  }
-</style>
+  const btnCategories = document.querySelector('#btnCategories');
+  
+  btnCategories.addEventListener('click', () => {
+    const dropdownMenu = document.querySelector('#dropdownMenu');
+    if (dropdownMenu.classList.contains('hidden')) {
+      dropdownMenu.classList.remove('hidden');
+      dropdownMenu.classList.add('block');
+    } else {
+      dropdownMenu.classList.remove('block');
+      dropdownMenu.classList.add('hidden');
+    }
+  })
+
+</script>
