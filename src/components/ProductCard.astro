@@ -14,9 +14,9 @@ const classNameAvailable = available ? "rounded bg-green-200 px-2 py-1" : "round
 
 ---
 
-<article class="rounded px-3 py-4 scale-95 hover:scale-100 [transition:box-shadow_0.5s,_transform_0.5s]" data-interactions={interactions} data-name={productName} data-price={productPrice} data-available={available}>
+<article class="rounded px-3 scale-95 hover:scale-100 [transition:box-shadow_0.5s,_transform_0.5s]" data-interactions={interactions} data-name={productName} data-price={productPrice} data-available={available}>
     <header class="flex justify-center">
-        <img src=`${productImage}` alt=`Product ${productName}` class="w-[250px] h-[200px] object-scale-down">
+        <img src=`${productImage}` alt=`Product ${productName}` class="w-[250px] h-[200px] object-scale-down [mask-image:linear-gradient(_white_95%,_transparent_)]">
     </header>
     <section class="sm:flex justify-between items-center pt-4">
         <div class=`${classNameAvailable}`>
