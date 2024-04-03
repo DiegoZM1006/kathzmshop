@@ -1,8 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import fetchProducts from "../../db";
+import fetchProductsByCategoryOrType from "../../utils/fetchProductsByCategoryOrType";
 import ProductCard from "../../components/ProductCard.astro";
-import { categoryProductsArr, categoryTranslate } from "../../main";
+import { categoryTranslate } from "../../main";
 import CategoryCard from "../../components/CategoryCard.astro";
 
 export const prerender = false;
@@ -13,12 +13,12 @@ const newCategory = categoryTranslate(category);
 let allProducts;
 
 try {
-    allProducts = await fetchProducts();
+    allProducts = await fetchProductsByCategoryOrType(category);
 } catch (error) {
     console.error(error.message);
 }
 
-const categoryProducts = allProducts?.filter((element) => element.category === newCategory);
+const categoryProducts = allProducts?.filter((element) => element.category === newCategory) || [];
 ---
 
 <Layout title={"KathZM Shop - " + newCategory}>

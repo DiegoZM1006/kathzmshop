@@ -1,23 +1,29 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import ProductCard from '../components/ProductCard.astro';
-import fetchProducts from "../db"
+import Layout from "../../layouts/Layout.astro"
+import ProductCard from '../../components/ProductCard.astro';
+import fetchPageableProducts from "../../utils/fetchPageableProducts";
+import fetchMaxAndMinPrice from "../../utils/fetchMaxAndMinPrice";
+import fetchContProducts from "../../utils/fetchContProducts";
+
+export const prerender = false;
+const { page } = Astro.params;
 
 let allProducts;
+let contProducts;
 
 try {
-	allProducts = await fetchProducts();
+	allProducts = await fetchPageableProducts(parseInt(page));
+	contProducts = await fetchContProducts();
 } catch (error) {
 	console.error(error.message);
 }
 
-const maxPrice = Math.max(...allProducts.map(item => item.price));
-const minPrice = Math.min(...allProducts.map(item => item.price));
+const [maxPrice, minPrice] = await fetchMaxAndMinPrice();
 ---
 
-<Layout title="KathZM Shop - Productos">
+<Layout title="KathZM Shop - Productos - Pagina">
 
-    <main>
+    <main id="main" data-page={page}>
 
 		<section class="w-full lg:w-[var(--page-width)] text-black mx-auto pt-10 px-3 lg:md-0">
 
@@ -32,7 +38,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 						<span>Filtrar y ordenar</span>
 					</div>
 				</button>
-				<span class="lengthProducts text-md text-gray-400">{allProducts.length} productos</span>	
+				<span class="lengthProducts text-md text-gray-400">{contProducts} productos</span>	
 			</section>
 
 			<section id="formFilterSort" class="z-30 translate-x-full fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.5)] text-black">
@@ -41,7 +47,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 					<section class="flex flex-row px-3 py-2 items-center border-b border-gray">
 						<div class="flex flex-col flex-grow justify-center items-center">
 							<h2>Filtrar y Ordenar</h2>
-							<span class="lengthProducts text-md text-gray-400">{allProducts.length} productos</span>	
+							<span class="lengthProducts text-md text-gray-400">{contProducts} productos</span>	
 						</div>
 						<button type="button" id="btnCancelFilter" class="cursor-pointer">
 							<svg xmlns="http://www.w3.org/2000/svg" id="cancelSearch" class="cursor-pointer" width="36" height="36" viewBox="0 0 24 24" style="fill: rgb(0, 0, 0);transform: ;msFilter:;"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
@@ -129,10 +135,10 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 			</section>
 
 			<nav aria-label="Page navigation example" class="mt-5 flex justify-center items-center">
-				<div class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listPrevElement">Anterior</div>
+				<a href={'/allProducts/' + (parseInt(page) - 1)} class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listPrevElement">Anterior</a>
 				<ul class="listPage inline-flex -space-x-px text-sm justify-center items-center">
 				</ul>
-				<div class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listNextElement">Siguiente</div>	
+				<a href={'/allProducts/' + (parseInt(page) + 1)} class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white listNextElement">Siguiente</a>	
 			</nav>
 
 
@@ -144,6 +150,9 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 
 <script>
 
+	import fetchContProducts from "../../utils/fetchContProducts";
+
+	const contProducts = await fetchContProducts();
 	const btnCancelFilter = document.querySelector('#btnCancelFilter');
 	const formFilterSort = document.querySelector('#formFilterSort');
 	const btnToFilterSort = document.querySelector('#btnToFilterSort');
@@ -159,48 +168,47 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 	const checboxInStockAndOutStock = document.querySelector('#inStockAndOutStock') as HTMLInputElement;
 	const lengthProducts = document.querySelectorAll('.lengthProducts');
 
-	let thisPage = 1;
+	let thisPage = parseInt(document.querySelector('#main').getAttribute('data-page'));
 	let limit = 4;
 	let mainList = document.querySelectorAll('.itemProduct');
 
-	function loadItem() {
+	// function loadItem() {
 
-		const contLengthProducts = mainList.length;
-		const totalProducts = mainListProducts.length;
+	// 	const contLengthProducts = mainList.length;
+	// 	const totalProducts = mainListProducts.length;
 
-		const text = contLengthProducts !== totalProducts ? `${contLengthProducts} de ${totalProducts} productos` : `${totalProducts} productos`;
+	// 	const text = contLengthProducts !== totalProducts ? `${contLengthProducts} de ${totalProducts} productos` : `${totalProducts} productos`;
 
-		lengthProducts.forEach(item => {
-			item.textContent = text;
-		});
+	// 	lengthProducts.forEach(item => {
+	// 		item.textContent = text;
+	// 	});
 
-		let beginGet = limit * (thisPage - 1);
-    	let endGet = limit * thisPage - 1;	
+	// 	let beginGet = limit * (thisPage - 1);
+    // 	let endGet = limit * thisPage - 1;	
 
-		mainList.forEach((item, key) => {
-			if (key >= beginGet && key <= endGet) {
-				item.classList.remove('hidden');
-				item.classList.add('block');
-			} else {
-				item.classList.remove('block');
-				item.classList.add('hidden');
-			}
-		});
+	// 	mainList.forEach((item, key) => {
+	// 		if (key >= beginGet && key <= endGet) {
+	// 			item.classList.remove('hidden');
+	// 			item.classList.add('block');
+	// 		} else {
+	// 			item.classList.remove('block');
+	// 			item.classList.add('hidden');
+	// 		}
+	// 	});
 
-		listPage();
-	}
-
-	loadItem();
+	// 	listPage();
+	// }
 
 	function listPage() {
 
-		let count = Math.ceil(mainList.length / limit);
+		let count = Math.ceil(contProducts / limit);
 		let startPage = Math.max(1, thisPage - 2); 
 		let endPage = Math.min(startPage + 4, count);
 		document.querySelector('.listPage').innerHTML = '';
 
 		for (let i = startPage; i <= endPage; i++) {
-			let newPage = document.createElement('li');
+			let newPage = document.createElement('a');
+			newPage.setAttribute('href', '/allProducts/' + i);
 			newPage.innerText = i + '';
 			newPage.className = 'listNums flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white';
 
@@ -216,16 +224,18 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 		for (let i = 0; i < listNums.length; i++) {
 			listNums[i].addEventListener("click", () => {
 				const num = parseInt(listNums[i].textContent);
-				changePage(num);
+				// changePage(num);
 			});
 		}
 
 	}
 
-	function changePage(i) {
-		thisPage = i;
-		loadItem();
-	}
+	listPage();
+
+	// function changePage(i) {
+	// 	thisPage = i;
+	// 	loadItem();
+	// }
 
 	function chagenToFilterOrSort(option: string) {
 		const list = document.querySelectorAll('.itemProduct > article');
@@ -259,7 +269,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 		});
 
 		mainList = document.querySelectorAll('.itemProduct');
-		loadItem();
+		// loadItem();
 	}
 
 	function filterProductsByAvailable() {
@@ -317,7 +327,7 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 
 		thisPage = 1;
 		mainList = document.querySelectorAll('.itemProduct');
-		loadItem();
+		// loadItem();
 	}
 
 	function filterProductsByPrice() {
@@ -374,19 +384,19 @@ const minPrice = Math.min(...allProducts.map(item => item.price));
 
 		thisPage = 1;
 		mainList = document.querySelectorAll('.itemProduct');
-		loadItem();
+		// loadItem();
 	}
 
 	listPrev.addEventListener("click", () => {
 		if (thisPage != 1) {
-			changePage(thisPage - 1)
+			// changePage(thisPage - 1)
 		}
 	});
 
 	listNext.addEventListener("click", () => {
 		const count = Math.ceil(mainList.length / limit);
 		if (thisPage != count) {
-			changePage(thisPage + 1)
+			// changePage(thisPage + 1)
 		}
 	});
 

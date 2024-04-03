@@ -1,16 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
-import fetchProducts from "../db"
+import fetchMainProducts from "../utils/fetchMainProducts"
 
 let finalProducts;
 
 try {
-	finalProducts = await fetchProducts();
+	finalProducts = await fetchMainProducts();
 } catch (error) {
 	console.error(error.message);
 }
-const tenFirstProducts = finalProducts.slice(0, 15);
 ---
 
 <Layout title="KathZM Shop">
@@ -22,7 +21,7 @@ const tenFirstProducts = finalProducts.slice(0, 15);
 
 			<section class="px-3 lg:px-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 pt-5 gap-x-3">
 				{
-          			tenFirstProducts?.map((item) => (
+          			finalProducts?.map((item) => (
 						<a href={"/product/" + item.name}>
 							<ProductCard productName={item.name} productImage={"data:image/png;base64," + item.image} productPrice={item.price} available={item.available} ></ProductCard>
 						</a>
@@ -31,7 +30,7 @@ const tenFirstProducts = finalProducts.slice(0, 15);
 			</section>
 
 			<section class="w-100 flex justify-center mt-5">
-				<a href="/allProducts" class="bg-black px-4 py-2 text-white rounded shadow">Mostrar todo</a>
+				<a href="/allProducts/1" class="bg-black px-4 py-2 text-white rounded shadow">Mostrar todo</a>
 			</section>
 
 		</section>

@@ -13,7 +13,7 @@ import Dropdown from "./Dropdown.astro";
 </nav>
 
 <nav id="productsBar" class="z-10 transition-all -translate-y-[180px] lg:w-[1000px] left-0 right-0 mx-auto ease-in-out fixed flex flex-col top-0 w-full mt-[var(--nav-height)] bg-black px-5 py-5 gap-5">
-    <h2 class="border-b border-b-slate-700 text-slate-300 pb-3">Products</h2>
+    <h2 class="border-b border-b-slate-700 text-slate-300 pb-3">Productos</h2>
     <div id="listProducts" class="flex flex-col gap-3">
 
     </div>
@@ -43,21 +43,7 @@ import Dropdown from "./Dropdown.astro";
 </header>
 
 <script>
-    import { initializeApp } from "firebase/app";
-    import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
-
-    const firebaseConfig = {
-    apiKey: "AIzaSyBHL8pQdAFF-1gvqDdejphfd3_Zb3sk2BE",
-    authDomain: "kathzm-b5783.firebaseapp.com",
-    projectId: "kathzm-b5783",
-    storageBucket: "kathzm-b5783.appspot.com",
-    messagingSenderId: "214773002445",
-    appId: "1:214773002445:web:8f5aee6780653b5a0b7984"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    export const db = getFirestore(app);
+    import fetchHeaderProducts from '../utils/fetchHeaderProducts'
 
     {
         const mainNavbar = document.querySelector('#mainNavbar');
@@ -92,17 +78,6 @@ import Dropdown from "./Dropdown.astro";
             }
         });
 
-        const handleSearch = async () => {
-            if (results.length == 0) {
-                const db = getFirestore();
-                const productsRef = collection(db, 'Products');
-                const snapshot = await getDocs(productsRef);
-                results = snapshot.docs.map(doc => doc.data());
-                return results;
-            }
-            return results;
-        };
-
         inputSearch.addEventListener('change', async () => {
             await searchAndUpdatePage();
         });
@@ -114,9 +89,8 @@ import Dropdown from "./Dropdown.astro";
         async function searchAndUpdatePage() {
             const value = inputSearch.value;
             if (value !== '') {
-                const products = await handleSearch();
-                const filteredResults = products.filter(product => product.name.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
-                updatePage(filteredResults);
+                const products = await fetchHeaderProducts(value.toLowerCase());
+                updatePage(products);
             } else {
                 productsBar.classList.add('-translate-y-[180px]');
                 listProducts.innerHTML = '';
